@@ -53,6 +53,7 @@ class User(Model):
 
     id = Column(Integer, primary_key=True)
     display_name = Column(Unicode)
+     _essay = Column('essay', Unicode)
     _password = Column('password', Unicode)
     _user_id = Column(UUID, index=True)
     _created_on = Column(DateTime)
@@ -77,13 +78,14 @@ class User(Model):
         'Preferences', backref=backref('user', uselist=False))
 
     @dbconnection
-    def __init__(self, store, display_name=None, preferences=None):
+    def __init__(self, store, essay, display_name=None, preferences=None):
         super(User, self).__init__()
         self._created_on = date_factory.now()
         user_id = uid_factory.new_uid()
         assert store.query(User).filter_by(_user_id=user_id).count() == 0, (
             'Duplicate user id {0}'.format(user_id))
         self._user_id = user_id
+        self.essay = essay
         self.display_name = ('' if display_name is None else display_name)
         if preferences is not None:
             store.add(preferences)
@@ -104,7 +106,14 @@ class User(Model):
     def created_on(self):
         """See `IUser`."""
         return self._created_on
+    @property
+    def essay(self):
+        return self._essay
 
+    @essay.setter
+    def essay(self, new_essay):
+        self._essay = new_essay
+        
     @property
     def password(self):
         return self._password
