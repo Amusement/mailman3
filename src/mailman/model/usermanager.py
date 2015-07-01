@@ -37,11 +37,11 @@ from zope.interface import implementer
 class UserManager:
     """See `IUserManager`."""
 
-    def create_user(self, email=None, display_name=None):
+    def create_user(self, email=None, essay=None, display_name=None):
         """See `IUserManager`."""
         if email:
             address = self.create_address(email, display_name)
-        user = User(display_name, Preferences())
+        user = User(essay,display_name, Preferences())
         if email:
             user.link(address)
         return user
