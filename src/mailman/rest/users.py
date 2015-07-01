@@ -75,6 +75,7 @@ class ListOfDomainOwners(GetterSetter):
 ATTRIBUTES = dict(
     cleartext_password=PasswordEncrypterGetterSetter(),
     display_name=GetterSetter(str),
+    essay=GetterSetter(str),
     is_server_owner=GetterSetter(as_boolean),
     )
 
@@ -82,6 +83,7 @@ ATTRIBUTES = dict(
 CREATION_FIELDS = dict(
     display_name=str,
     email=str,
+    essay=str,
     is_server_owner=bool,
     password=str,
     _optional=('display_name', 'password', 'is_server_owner'),
@@ -95,10 +97,12 @@ def create_user(arguments, response):
     # strip that out (if it exists), then create the user, adding the password
     # after the fact if successful.
     password = arguments.pop('password', None)
+    essay = arguments.pop('essay', None)
     is_server_owner = arguments.pop('is_server_owner', False)
     user_manager = getUtility(IUserManager)
     try:
         user = user_manager.create_user(**arguments)
+        user.essay = essay
     except ExistingAddressError as error:
         # The address already exists.  If the address already has a user
         # linked to it, raise an error, otherwise create a new user and link
@@ -136,6 +140,7 @@ class _UserBase(CollectionMixin):
         user_id = user.user_id.int
         resource = dict(
             created_on=user.created_on,
+            essay=user.essay,
             is_server_owner=user.is_server_owner,
             self_link=path_to('users/{}'.format(user_id)),
             user_id=user_id,
@@ -144,6 +149,10 @@ class _UserBase(CollectionMixin):
         # with the real name.  These could be None or the empty string.
         if user.password:
             resource['password'] = user.password
+            
+        if user.essay:
+            resource['essay'] = user.essay 
+            
         if user.display_name:
             resource['display_name'] = user.display_name
         return resource
