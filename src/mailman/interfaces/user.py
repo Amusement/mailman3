@@ -60,6 +60,9 @@ class IUser(Interface):
 
     created_on = Attribute(
         """The date and time at which this user was created.""")
+    
+    essay = Attribute(
+        """The date and time at which this user was created.""")
 
     addresses = Attribute(
         """An iterator over all the `IAddresses` controlled by this user.""")
