@@ -29,7 +29,7 @@ from zope.interface import Interface, Attribute
 class IUserManager(Interface):
     """The global user management service."""
 
-    def create_user(email=None, display_name=None):
+    def create_user(email=None, essay=None, display_name=None):
         """Create and return an `IUser`.
 
         :param email: The text email address for the user being created.
